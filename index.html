@@ -1,56 +1,153 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>QR Code Generator</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="تطبيق احترافي لتوليد ومسح أكواد QR - نسمة هوى بغداد">
+    <meta name="theme-color" content="#f39c12">
+    <title>نسمة هوى بغداد - QR Code</title>
 
-<link rel="manifest" href="manifest.json">
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
 
-<script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
 
-<style>
-body {
-    font-family: Arial;
-    text-align: center;
-    padding: 20px;
-}
-textarea {
-    width: 100%;
-    height: 120px;
-}
-button {
-    margin-top: 10px;
-    padding: 10px;
-    width: 100%;
-}
-canvas {
-    margin-top: 20px;
-}
-</style>
+    <!-- QR Code Library -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
 
-<h2>تحويل النص أو الكود إلى QR Code</h2>
+    <!-- الترويسة -->
+    <header class="header">
+        <div class="palm-icon">🌴</div>
+        <h1>نسمة هوى بغداد</h1>
+        <p>مولد أكواد QR الاحترافي</p>
+    </header>
 
-<textarea id="text" placeholder="اكتب النص أو الكود هنا"></textarea>
+    <div class="container">
 
-<button onclick="generateQR()">إنشاء QR Code</button>
+        <!-- بطاقة التوليد -->
+        <div class="card">
+            <h2 class="card-title">
+                <span>✨</span>
+                إنشاء QR Code
+            </h2>
 
-<canvas id="qrcode"></canvas>
+            <div class="input-group">
+                <label for="textInput">النص أو الرابط</label>
+                <textarea id="textInput"
+                    placeholder="أدخل النص، الرابط، أو أي محتوى تريد تحويله إلى QR Code...&#10;&#10;مثال: https://example.com"></textarea>
+            </div>
 
-<script>
-function generateQR() {
-    let text = document.getElementById("text").value;
-    QRCode.toCanvas(document.getElementById("qrcode"), text);
-}
+            <div class="btn-group">
+                <button id="generateBtn" class="btn btn-primary btn-full">
+                    <span>🎨</span>
+                    إنشاء الكود
+                </button>
+            </div>
 
-// تسجيل Service Worker
-if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('service-worker.js');
-}
-</script>
+            <!-- منطقة عرض QR -->
+            <div class="qr-display">
+                <canvas id="qrcode"></canvas>
+                <div class="qr-placeholder" id="qrPlaceholder">
+                    <p class="qr-placeholder-icon">📱</p>
+                    <p>سيظهر QR Code هنا بعد الإنشاء</p>
+                </div>
+            </div>
+
+            <div class="btn-group btn-group-spacing">
+                <button id="downloadBtn" class="btn btn-primary btn-download-hidden">
+                    <span>📥</span>
+                    تحميل الصورة
+                </button>
+            </div>
+        </div>
+
+        <!-- بطاقة التخصيص -->
+        <div class="card">
+            <h2 class="card-title">
+                <span>🎨</span>
+                خيارات التخصيص
+            </h2>
+
+            <div class="customization-grid">
+                <div class="input-group">
+                    <label for="qrSize">حجم الكود</label>
+                    <input type="number" id="qrSize" min="128" max="512" value="256" step="64">
+                </div>
+
+                <div class="input-group">
+                    <label for="darkColor">لون الكود</label>
+                    <div class="color-picker-wrapper">
+                        <input type="color" id="darkColor" value="#2c3e50">
+                        <span id="darkColorValue">#2c3e50</span>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="lightColor">لون الخلفية</label>
+                    <div class="color-picker-wrapper">
+                        <input type="color" id="lightColor" value="#ffffff">
+                        <span id="lightColorValue">#ffffff</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- بطاقة السجل -->
+        <div class="card">
+            <div class="history-header">
+                <h2 class="card-title history-title">
+                    <span>📋</span>
+                    سجل الأكواد
+                </h2>
+                <button id="clearHistoryBtn" class="btn btn-danger btn-icon" title="مسح الكل">
+                    🗑️
+                </button>
+            </div>
+
+            <div id="historyList" class="history-list">
+                <!-- سيتم ملؤها بواسطة JavaScript -->
+            </div>
+        </div>
+
+        <!-- معلومات إضافية -->
+        <div class="card tips-card">
+            <h3 class="tips-title">💡 نصائح الاستخدام</h3>
+            <div class="tips-content">
+                <p>✅ يمكنك إدخال نصوص، روابط، أرقام هواتف، أو أي محتوى</p>
+                <p>✅ استخدم زر Enter للتوليد السريع</p>
+                <p>✅ يتم حفظ سجل الأكواد تلقائياً</p>
+                <p>✅ خصص الألوان والحجم حسب احتياجك</p>
+                <p>✅ التطبيق يعمل بدون إنترنت بعد التحميل الأول</p>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p class="footer-title">🌴 نسمة هوى بغداد 🌴</p>
+        <p class="footer-subtitle">تطبيق احترافي لتوليد أكواد QR</p>
+        <p class="footer-copyright">
+            © 2026 - جميع الحقوق محفوظة
+        </p>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="app.js"></script>
 
 </body>
+
 </html>
